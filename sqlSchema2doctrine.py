@@ -24,15 +24,22 @@ autoIncrementPattern = re.compile(
 )
 
 intColPattern = re.compile(
-    r"\w*int\(?"
+    r"(\w*)int\(?"
 )
 stringColPattern = re.compile(
     r"\w*char\(?"
 )
 
 def doctrineType(col):
-    if intColPattern.match(col):
-        return "integer"
+    intMatch = intColPattern.match(col)
+    if intMatch:
+        subtype = intMatch.group(1)
+        if subtype == "tiny" or subtype == "small":
+            return "smallint"
+        elif subtype == "big":
+            return "bigint"
+        else:
+            return "integer"
     elif stringColPattern.match(col):
         return "string"
     elif col.startswith("enum") or col.startswith("set"):
