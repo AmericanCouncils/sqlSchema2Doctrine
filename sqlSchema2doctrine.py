@@ -11,6 +11,10 @@ columnPattern = re.compile(
     r'`(?P<name>\w+)` (?P<type>\S+) (?P<options>.+)'
 )
 
+keyPattern = re.compile(
+    r'(?P<primary>(?:PRIMARY)?)\s*KEY (?:`\w+`)?\s*\(`(?P<name>\w+)`\)'
+)
+
 defaultValuePattern = re.compile(
     r"\bDEFAULT (?P<value>(?:\w+|'[^']+'))\b"
 )
@@ -80,5 +84,17 @@ for tbl in tablePattern.finditer(sql):
             doctrineType(col.group('type')),
             ", ".join(doctrineOptions(col.group('type'), col.group('options')))
         )
+
+    for key in keyPattern.finditer(tbl.group('def')):
+        if key.group('primary') == "PRIMARY":
+            print "$%s->setPrimaryKey([\"%s\"]);" % (
+                tbl.group('name'),
+                key.group('name')
+            )
+        else:
+            print "$%s->addIndex([\"%s\"]);" % (
+                tbl.group('name'),
+                key.group('name')
+            )
 
     print
