@@ -80,10 +80,5 @@ for tbl in tablePattern.finditer(sql):
             doctrineType(col.group('type')),
             ", ".join(doctrineOptions(col.group('type'), col.group('options')))
         )
-        defaultValue = defaultValuePattern.search(col.group('options'))
-        #if defaultValue:
-            #print "   DEFAULT %s" % (defaultValue.group('value'))
-        #if notNullPattern.search(col.group('options')):
-            #print "   NOT NULL"
 
     print
