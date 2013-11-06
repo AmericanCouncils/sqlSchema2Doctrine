@@ -27,7 +27,7 @@ intColPattern = re.compile(
     r"(\w*)int\(?"
 )
 stringColPattern = re.compile(
-    r"\w*char\(?"
+    r"\w*char(?:\((\d+)\))?"
 )
 
 def doctrineType(col):
@@ -51,6 +51,7 @@ def doctrineType(col):
 
 def doctrineOptions(col, options):
     r = []
+
     if notNullPattern.search(options):
         r.append('"notnull" => true')
     if autoIncrementPattern.search(options):
@@ -58,6 +59,11 @@ def doctrineOptions(col, options):
     defaultValue = defaultValuePattern.search(options)
     if defaultValue:
         r.append('"default" => %s' % (defaultValue.group('value')))
+
+    stringMatch = stringColPattern.match(col)
+    if stringMatch and stringMatch.group(1) is not None:
+        r.append('"length" => %s' % int(stringMatch.group(1)))
+
     return r
 
 sql = open(sys.argv[1], 'r').read()
