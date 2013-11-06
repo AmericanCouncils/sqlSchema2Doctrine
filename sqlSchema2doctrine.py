@@ -1,15 +1,19 @@
 #!/usr/bin/env python
 
-import sqlparse, sys, pprint
+import re, sys
+
+tablePattern = re.compile(
+    r'CREATE TABLE [\w= ]*`(?P<name>\w+)` \((?P<def>.+?)\)[\w= ]*;',
+    re.DOTALL
+)
+
+columnPattern = re.compile(
+    r'`(?P<name>\w+)` (?P<type>\S+) (?P<options>.+)'
+)
 
 sql = open(sys.argv[1], 'r').read()
-tree = sqlparse.parse(sql)
-for st in tree:
-    if st.get_type() != 'CREATE': continue
-    # It looks like a function call because the table contents are in parens
-    tbl = st.token_next_by_instance(0, sqlparse.sql.Function)
-    tbl_name = tbl.token_next_by_instance(0, sqlparse.sql.Identifier)
-    pprint.pprint(tbl_name.value)
-    fields = tbl.token_next_by_instance(0, sqlparse.sql.Parenthesis)
-    pprint.pprint(fields.flatten())
-    break
+for tbl in tablePattern.finditer(sql):
+    print tbl.group('name')
+    for col in columnPattern.finditer(tbl.group('def')):
+        print "N: %s   T: %s" % (col.group('name'), col.group('type'))
+    print
