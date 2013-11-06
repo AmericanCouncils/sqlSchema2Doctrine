@@ -12,21 +12,65 @@ columnPattern = re.compile(
 )
 
 defaultValuePattern = re.compile(
-    r"\bDEFAULT (?P<value>(?:\w+|'[^']+'))"
+    r"\bDEFAULT (?P<value>(?:\w+|'[^']+'))\b"
 )
 
 notNullPattern = re.compile(
-    r"\bNOT NULL"
+    r"\bNOT NULL\b"
 )
+
+autoIncrementPattern = re.compile(
+    r"\bAUTO_INCREMENT\b"
+)
+
+intColPattern = re.compile(
+    r"\w*int\(?"
+)
+stringColPattern = re.compile(
+    r"\w*char\(?"
+)
+
+def doctrineType(col):
+    if intColPattern.match(col):
+        return "integer"
+    elif stringColPattern.match(col):
+        return "string"
+    elif col.startswith("enum") or col.startswith("set"):
+        return "string"
+    elif col.startswith("double") or col.startswith("float"):
+        return "float"
+    else:
+        return col
+
+def doctrineOptions(col, options):
+    r = []
+    if notNullPattern.search(options):
+        r.append('"notnull" => true')
+    if autoIncrementPattern.search(options):
+        r.append('"autoincrement" => true')
+    defaultValue = defaultValuePattern.search(options)
+    if defaultValue:
+        r.append('"default" => %s' % (defaultValue.group('value')))
+    return r
 
 sql = open(sys.argv[1], 'r').read()
 for tbl in tablePattern.finditer(sql):
-    print tbl.group('name')
+    print "$%s = $schema->createTable(\"%s\");" % (
+        tbl.group('name'),
+        tbl.group('name')
+    )
+
     for col in columnPattern.finditer(tbl.group('def')):
-        print "N: %s   T: %s" % (col.group('name'), col.group('type'))
+        print "$%s->addColumn(\"%s\", \"%s\", [%s]);" % (
+            tbl.group('name'),
+            col.group('name'),
+            doctrineType(col.group('type')),
+            ", ".join(doctrineOptions(col.group('type'), col.group('options')))
+        )
         defaultValue = defaultValuePattern.search(col.group('options'))
-        if defaultValue:
-            print "   DEFAULT %s" % (defaultValue.group('value'))
-        if notNullPattern.search(col.group('options')):
-            print "   NOT NULL"
+        #if defaultValue:
+            #print "   DEFAULT %s" % (defaultValue.group('value'))
+        #if notNullPattern.search(col.group('options')):
+            #print "   NOT NULL"
+
     print
