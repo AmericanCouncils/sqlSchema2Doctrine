@@ -44,6 +44,8 @@ def doctrineType(col):
             return "bigint"
         else:
             return "integer"
+    elif col == "timestamp":
+        return "integer"
     elif stringColPattern.match(col):
         return "string"
     elif col.startswith("enum") or col.startswith("set"):
