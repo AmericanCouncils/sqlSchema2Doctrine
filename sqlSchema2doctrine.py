@@ -58,6 +58,9 @@ def doctrineOptions(col, options):
 
     if notNullPattern.search(options):
         r.append('"notnull" => true')
+    else:
+        r.append('"notnull" => false')
+
     if autoIncrementPattern.search(options):
         r.append('"autoincrement" => true')
     defaultValue = defaultValuePattern.search(options)
