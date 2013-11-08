@@ -3,24 +3,25 @@
 import re, sys
 
 tablePattern = re.compile(
-    r'CREATE TABLE [\w= ]*`(?P<name>\w+)` \((?P<def>.+?)\)[\w= ]*;',
+    r'CREATE\s+TABLE\s+[\w= ]*`(?P<name>\w+)`\s+\((?P<def>.+?)\)[\w= ]*;',
     re.DOTALL
 )
 
 columnPattern = re.compile(
-    r'`(?P<name>\w+)` (?P<type>\S+) (?P<options>.+)'
+    r'^\s+`(?P<name>\w+)`\s+(?P<type>\S+)\s+(?P<options>.+)',
+    re.MULTILINE
 )
 
 keyPattern = re.compile(
-    r'(?P<primary>(?:PRIMARY)?)\s*KEY (?:`\w+`)?\s*\(`(?P<name>\w+)`\)'
+    r'(?P<primary>(?:PRIMARY)?)\s*KEY\s+(?:`\w+`)?\s*\(`(?P<name>\w+)`\)'
 )
 
 defaultValuePattern = re.compile(
-    r"\bDEFAULT (?P<value>(?:\w+|'[^']+'))\b"
+    r"\bDEFAULT\s+(?P<value>(?:\w+|'[^']+'))\b"
 )
 
 notNullPattern = re.compile(
-    r"\bNOT NULL\b"
+    r"\bNOT\s+NULL\b"
 )
 
 autoIncrementPattern = re.compile(
