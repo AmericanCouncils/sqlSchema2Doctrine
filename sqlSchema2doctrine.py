@@ -3,17 +3,17 @@
 import re, sys
 
 tablePattern = re.compile(
-    r'CREATE\s+TABLE\s+[\w= ]*`(?P<name>\w+)`\s+\((?P<def>.+?)\)[\w= ]*;',
+    r'CREATE\s+TABLE[\s\w= ]*`(?P<name>\w+)`\s*\((?P<def>.+?)\)[\w= ]*;',
     re.DOTALL
 )
 
 columnPattern = re.compile(
-    r'^\s+`(?P<name>\w+)`\s+(?P<type>\S+)\s+(?P<options>.+)',
+    r'^\s*`(?P<name>\w+)`\s*(?P<type>\S+)\s+(?P<options>.+)',
     re.MULTILINE
 )
 
 keyPattern = re.compile(
-    r'(?P<primary>(?:PRIMARY)?)\s*KEY\s+(?:`\w+`)?\s*\(`(?P<name>\w+)`\)'
+    r'(?P<primary>(?:PRIMARY)?)\s*KEY\s*(?:`\w+`)?\s*\(`(?P<name>\w+)`\)'
 )
 
 defaultValuePattern = re.compile(
