@@ -17,7 +17,7 @@ keyPattern = re.compile(
 )
 
 defaultValuePattern = re.compile(
-    r"\bDEFAULT\s+(?P<value>(?:\w+|'[^']+'))\b"
+    r"\bDEFAULT\s+(?P<value>(?:[\d.-]+|'[^']+'|NULL))\b"
 )
 
 notNullPattern = re.compile(
