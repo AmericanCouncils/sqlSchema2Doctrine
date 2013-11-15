@@ -8,7 +8,7 @@ tablePattern = re.compile(
 )
 
 columnPattern = re.compile(
-    r'^\s*`(?P<name>\w+)`\s*(?P<type>\S+)\s*(?P<options>.*)',
+    r'^[ ]*`(?P<name>\w+)`[ ]*(?P<type>\S+)[ ]*(?P<options>[\w ]*)',
     re.MULTILINE
 )
 
