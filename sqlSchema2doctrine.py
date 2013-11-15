@@ -8,7 +8,7 @@ tablePattern = re.compile(
 )
 
 columnPattern = re.compile(
-    r'^\s*`(?P<name>\w+)`\s*(?P<type>\S+)\s+(?P<options>.+)',
+    r'^\s*`(?P<name>\w+)`\s*(?P<type>\S+)\s*(?P<options>.*)',
     re.MULTILINE
 )
 
@@ -36,6 +36,7 @@ stringColPattern = re.compile(
 )
 
 def doctrineType(col):
+    col = col.rstrip(",")
     intMatch = intColPattern.match(col)
     if intMatch:
         subtype = intMatch.group(1)
